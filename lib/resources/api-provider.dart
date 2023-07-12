@@ -5,15 +5,18 @@ import 'package:minwell/models/models.dart';
 
 class ApiProvider {
   final Dio _dio = Dio();
-  final String _url = 'https://api.pexels.com/v1/curated';
+  int page = 1;
+  String? categoria = '';
+  final String _url = 'https://api.pexels.com/v1/';
   final String _urlVideos = 'https://api.pexels.com/videos/popular';
   final String _urlPopulares = 'https://api.pexels.com/v1/search?query=populares&per_page=30';
-  final String apiKey ='';
+  final String apiKey ='L2JKrIBAvrvrwm3m4F1O0xIvLNeLfi7b9BLUkfR0y0cC0qW5tQKiMqAu';
 
 ///Get images
-  Future<List<ImageModel>> fetchImages() async {
+  Future<List<ImageModel>> fetchImages(String categoria) async {
     try {
-      Response response = await _dio.get(_url,
+      print(_url+categoria);
+      Response response = await _dio.get(_url+categoria,
           options: Options(
             headers: {"authorization": apiKey},
           ));
@@ -68,17 +71,19 @@ class ApiProvider {
   }
 
 /// Search by category
- Future<List<ImageModel>> fetchImagesByCategory (String category)async{
+ Future<List<ImageModel>> fetchImagesByCategory (String category, int page)async{
     try {
-      Response response = await _dio.get('https://api.pexels.com/v1/search?query=$category&per_page=30',
+      var url = 'https://api.pexels.com/v1/search?query=$category&per_page=30&page=$page';
+      print(url);
+      Response response = await _dio.get(url,
           options: Options(
             headers: {"authorization": apiKey, 'X-Ratelimit-Limit': '20000', 'X-Ratelimit-Remaining': '19684', 'X-Ratelimit-Reset': '1619452800'},
           ));
-        final List<ImageModel> videosModel = [];
+        final List<ImageModel> imageModel = [];
         for (var item in response.data['photos']) {
-          videosModel.add(ImageModel.fromJson(item));
+          imageModel.add(ImageModel.fromJson(item));
         }
-        return videosModel;
+        return imageModel;
     } catch (e) {
       if (kDebugMode) {
         debugPrint(e.toString());

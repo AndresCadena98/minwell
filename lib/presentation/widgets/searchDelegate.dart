@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fast_cached_network_image/fast_cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -52,11 +53,28 @@ class SearchWallpapersDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    BlocProvider.of<SearchBloc>(context).add(SearchWallpapers(query: query));
+    var blocWallpapers = BlocProvider.of<WallpapersBlocBloc>(context).state;
+
     List<ImageModel> imagesResult = [];
-    // TODO: implement buildResults
+    int page = 1;
+    ScrollController _scrollController = ScrollController();
+    loadMore() {
+      page = page + 1;
+      BlocProvider.of<SearchBloc>(context)
+          .add(SearchWallpapers(query: query, page: page));
+    }
+
+    if (blocWallpapers is loadMoreWallpapersPopulares) {
+      imagesResult.addAll(blocWallpapers.imageModel);
+    }
     return BlocBuilder<SearchBloc, SearchState>(
       builder: (context, state) {
+        _scrollController.addListener(() {
+          if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent) {
+            loadMore();
+          }
+        });
         if (state is SearchLoaded) {
           imagesResult = state.imageModel;
         }
@@ -65,11 +83,10 @@ class SearchWallpapersDelegate extends SearchDelegate {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             decoration: const BoxDecoration(
-                  image: DecorationImage(
+                image: DecorationImage(
                     filterQuality: FilterQuality.high,
-                    
-                    image: AssetImage('assets/images/backHome.jpg'), fit: BoxFit.cover)
-                ),
+                    image: AssetImage('assets/images/backHome.jpg'),
+                    fit: BoxFit.cover)),
             child: const Center(
                 child: Text(
               'Sin resultados',
@@ -80,34 +97,34 @@ class SearchWallpapersDelegate extends SearchDelegate {
         if (state is SearchLoading) {
           return Container(
             decoration: const BoxDecoration(
-                  image: DecorationImage(
+                image: DecorationImage(
                     filterQuality: FilterQuality.high,
-                   
-                    image: AssetImage('assets/images/backHome.jpg'), fit: BoxFit.cover)
-                ),
+                    image: AssetImage('assets/images/backHome.jpg'),
+                    fit: BoxFit.cover)),
             child: Center(
               child: CircularProgressIndicator(
-                        color: buttonsBar,
-                      ),
+                color: buttonsBar,
+              ),
             ),
           );
         }
         return Center(
           child: Container(
             decoration: const BoxDecoration(
-                  image: DecorationImage(
+                image: DecorationImage(
                     filterQuality: FilterQuality.high,
-                    
-                    image: AssetImage('assets/images/backHome.jpg'), fit: BoxFit.cover)
-                ),
+                    image: AssetImage('assets/images/backHome.jpg'),
+                    fit: BoxFit.cover)),
             child: RefreshIndicator(
               color: Colors.black,
               backgroundColor: buttonsBar,
               onRefresh: () async {
+                page = page + 1;
                 BlocProvider.of<SearchBloc>(context)
-                    .add(SearchWallpapers(query: query));
+                    .add(SearchWallpapers(query: query, page: page));
               },
               child: GridView.count(
+                  controller: _scrollController,
                   crossAxisCount: 2,
                   children: List.generate(imagesResult.length, (index) {
                     return Padding(
@@ -147,18 +164,27 @@ class SearchWallpapersDelegate extends SearchDelegate {
                                                     imagesResult[index]
                                                         .avgColor!)));
                                   },
-                                  child: CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      progressIndicatorBuilder:
-                                          (context, url, downloadProgress) =>
-                                              LoadingAnimationWidget.fallingDot(
-                                                color: buttonsBar,
-                                                size: 200,
-                                              ),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.error),
-                                      imageUrl:
-                                          imagesResult[index].src!.original!),
+                                  child: FastCachedImage(
+                                    url: imagesResult[index].src!.medium!,
+                                    loadingBuilder: (p0, p1) {
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          color: buttonsBar,
+                                        ),
+                                      );
+                                    },
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Center(
+                                        child: Icon(
+                                          Icons.error,
+                                          color: Colors.red,
+                                        ),
+                                      );
+                                    },
+                                    fit: BoxFit.cover,
+                                    height: 200,
+                                    width: 200,
+                                  ),
                                 )),
                           ),
                         ),
@@ -177,12 +203,11 @@ class SearchWallpapersDelegate extends SearchDelegate {
     return Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-       decoration: const BoxDecoration(
-                  image: DecorationImage(
-                   
-                    opacity: 1,
-                    image: AssetImage('assets/images/backHome.jpg'), fit: BoxFit.cover)
-                ),
+        decoration: const BoxDecoration(
+            image: DecorationImage(
+                opacity: 1,
+                image: AssetImage('assets/images/backHome.jpg'),
+                fit: BoxFit.cover)),
         child: const Center(
             child: Text(
           'Busca tus wallpapers favoritos',

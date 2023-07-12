@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fast_cached_network_image/fast_cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:minwell/bloc/blocs.dart';
@@ -99,26 +101,39 @@ class _ImageSliderState extends State<ImageSlider> {
                                           .avgColor!)));
                             }
                           },
-                          child: CachedNetworkImage(
-                            imageUrl: widget.isPopular
-                                ? widget.state.imageModelPopulares[index].src!
-                                    .original!
-                                : widget.state.imageModel[index].src!.original!,
-                            fit: BoxFit.cover,
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) =>
-                                    LoadingAnimationWidget.fallingDot(
-                              color: buttonsBar,
-                              size: 200,
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                          ),
-                        )),
+                          child:FastCachedImage(
+                                        url: widget.isPopular
+                                            ? widget.state
+                                                .imageModelPopulares[index]
+                                                .src!
+                                                .original!
+                                            : widget.state.imageModel[index]
+                                                .src!
+                                                .original!,
+                                        loadingBuilder: (p0, p1) {
+                                          return  Center(
+                                            child: CircularProgressIndicator(
+                                              color: buttonsBar,
+                                            ),
+                                          );
+                                        },
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return const Center(
+                                            child: Icon(
+                                              Icons.error,
+                                              color: Colors.red,
+                                            ),
+                                          );
+                                        
+                                        },
+                                        fit: BoxFit.cover,
+                                        height: 200,
+                                        width: 200,
+                                      ),
                   ),
                 ),
               ),
-            );
+            )));
           },
         ),
       ),

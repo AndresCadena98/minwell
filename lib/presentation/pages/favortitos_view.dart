@@ -82,18 +82,18 @@ class _FavoritePageViewState extends State<FavoritePageView> {
                                                   urlData: favorites[index],
                                                   photographerData:
                                                       wallpaperBloc
-                                                          .imageModel[index]
+                                                          .imageModel![index]
                                                           .photographer!,
                                                   photographerURL: wallpaperBloc
-                                                      .imageModel[index]
+                                                      .imageModel![index]
                                                       .photographerUrl!,
                                                   widthImageData: wallpaperBloc
-                                                      .imageModel[index].width
+                                                      .imageModel![index].width
                                                       .toString(),
                                                   heightImageData: wallpaperBloc
-                                                      .imageModel[index].height,
+                                                      .imageModel![index].height,
                                                   avg_colorData: wallpaperBloc
-                                                      .imageModel[index]
+                                                      .imageModel![index]
                                                       .avgColor!)));
                                     }
                                   },

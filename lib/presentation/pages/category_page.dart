@@ -9,33 +9,33 @@ import 'package:minwell/commons/colors.dart';
 import 'package:minwell/models/models.dart';
 import 'package:minwell/presentation/presentation.dart';
 
-class ResultSearch extends StatefulWidget {
+class CategoryPage extends StatefulWidget {
   String categoria;
 
-  ResultSearch({super.key, required this.categoria});
+  CategoryPage({super.key, required this.categoria});
 
   @override
-  State<ResultSearch> createState() => _ResultSearchState();
+  State<CategoryPage> createState() => _CategoryPageState();
 }
 
-class _ResultSearchState extends State<ResultSearch> {
+class _CategoryPageState extends State<CategoryPage> {
   List<ImageModel> imagesResult = [];
   ScrollController _scrollController = ScrollController();
-  bool visibleLoading = false;
 
   @override
   void initState() {
-    // TODO: implement initState
+    // TODO: implement initState                                                     
     super.initState();
+    imagesResult = [];
   }
 
   @override
   Widget build(BuildContext context) {
     var blocWallpapers = BlocProvider.of<WallpapersBlocBloc>(context).state;
     int page = 1;
+    print(blocWallpapers);
     if (blocWallpapers is loadMoreWallpapersPopulares) {
       imagesResult.addAll(blocWallpapers.imageModel);
-      visibleLoading = false;
     }
     loadMore() {
       setState(() {
@@ -48,7 +48,6 @@ class _ResultSearchState extends State<ResultSearch> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-            visibleLoading = true;
         loadMore();
       }
     });
@@ -59,7 +58,7 @@ class _ResultSearchState extends State<ResultSearch> {
           leading: IconButton(
             onPressed: () {
               BlocProvider.of<WallpapersBlocBloc>(context)
-                  .add(const GetWallpapersList(category: 'curated'));
+                  .add(GetWallpapersList(category: 'curated'));
               Navigator.pop(context);
             },
             icon: const Icon(
@@ -70,20 +69,20 @@ class _ResultSearchState extends State<ResultSearch> {
           backgroundColor: background,
           title: Text(
             'Resultados de ${widget.categoria}',
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white),
           ),
         ),
-        body: BlocBuilder<SearchBloc, SearchState>(
+        body: BlocBuilder<WallpapersBlocBloc, WallpapersBlocState>(
           builder: (context, state) {
-            if (state is SearchLoaded) {
+            if (state is WallpapersLoaded) {
               imagesResult = state.imageModel;
             }
-            if (state is SearchError) {
+            if (state is WallpapersError) {
               return const Center(
                 child: Text('Error'),
               );
             }
-            if (state is SearchLoading) {
+            if (state is WallpapersLoading) {
               return Center(
                   child: CircularProgressIndicator(
                 color: buttonsBar,
@@ -91,7 +90,7 @@ class _ResultSearchState extends State<ResultSearch> {
             }
             return Center(
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                     image: DecorationImage(
                         filterQuality: FilterQuality.high,
                         opacity: 0.5,
@@ -186,11 +185,9 @@ class _ResultSearchState extends State<ResultSearch> {
           backgroundColor: buttonsBar,
           onPressed: () {
             _scrollController.animateTo(0,
-                duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+                duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
           },
-          child: visibleLoading ? CircularProgressIndicator(color: Colors.black,): const Icon(Icons.arrow_upward),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        );
+          child: Icon(Icons.arrow_upward),
+        ));
   }
 }

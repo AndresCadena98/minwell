@@ -8,4 +8,15 @@ abstract class WallpapersBlocEvent extends Equatable {
 }
 
 
-class GetWallpapersList extends WallpapersBlocEvent {}
+class GetWallpapersList extends WallpapersBlocEvent {
+  final String category;
+  const GetWallpapersList({required this.category});
+}
+
+class LoadMoreWallpapersPopulares extends WallpapersBlocEvent {
+  final String category;
+  final int page;
+  const LoadMoreWallpapersPopulares({required this.category, required this.page});
+}
+
+class LoadMoreWallpapersRecientes extends WallpapersBlocEvent {}

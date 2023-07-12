@@ -21,7 +21,7 @@ class _HomePageViewState extends State<HomePageView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    BlocProvider.of<WallpapersBlocBloc>(context).add(GetWallpapersList());
+    BlocProvider.of<WallpapersBlocBloc>(context).add(GetWallpapersList(category: 'curated'));
   }
 
   @override
@@ -67,19 +67,19 @@ class _HomePageViewState extends State<HomePageView> {
               return Center(
                   child: Container(
                       color: background,
-                      child: const CircularProgressIndicator()));
+                      child:  CircularProgressIndicator(color:buttonsBar,)));
             } else if (state is WallpapersLoading) {
               return Center(
                   child: Container(
                       color: background,
-                      child: const CircularProgressIndicator()));
+                      child:  CircularProgressIndicator(color:buttonsBar,)));
             } else if (state is WallpapersLoaded) {
               return RefreshIndicator(
                 color: Colors.black,
                 backgroundColor: buttonsBar,
                 onRefresh: () async {
                   BlocProvider.of<WallpapersBlocBloc>(context)
-                      .add(GetWallpapersList());
+                      .add(GetWallpapersList(category: 'curated'));
                 },
                 child: Container(
                   color: background,

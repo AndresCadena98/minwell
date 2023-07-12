@@ -23,3 +23,12 @@ class WallpapersError extends WallpapersBlocState {
   @override
   List<Object> get props => [message];
 }
+
+class loadMoreWallpapersPopulares extends WallpapersBlocState {
+  final List<ImageModel> imageModel;
+  final List<VideoModel> videoModel;
+  final List<ImageModel> imageModelPopulares;
+  const loadMoreWallpapersPopulares({required this.imageModel, required this.videoModel, required this.imageModelPopulares});
+  @override
+  List<Object> get props => [imageModel, videoModel, imageModelPopulares];
+}

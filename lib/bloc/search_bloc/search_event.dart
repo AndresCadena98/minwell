@@ -9,7 +9,8 @@ abstract class SearchEvent extends Equatable {
 
 class SearchWallpapers extends SearchEvent {
   final String query;
-  SearchWallpapers({required this.query});
+  final int page;
+  SearchWallpapers({required this.query, required this.page});
   @override
   List<Object> get props => [query];
 }

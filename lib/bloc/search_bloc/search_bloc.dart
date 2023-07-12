@@ -19,7 +19,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   FutureOr<void> _onSearchWallpapers(SearchWallpapers event, Emitter<SearchState> emit)async{
     emit(SearchLoading());
     try {
-      final List<ImageModel> imageModel = await ApiRepository().fetchImagesByCategory(event.query);
+      final List<ImageModel> imageModel = await ApiRepository().fetchImagesByCategory(event.query,event.page);
       emit(SearchLoaded(imageModel: imageModel));
     } catch (e) {
       emit(SearchError());

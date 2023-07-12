@@ -32,7 +32,7 @@ class _CategoriSliderState extends State<CategoriSlider> {
             onTap: () {
               print('Categoria ${categorias[index]}');
               BlocProvider.of<SearchBloc>(context)
-                  .add(SearchWallpapers(query: categorias[index]));
+                  .add(SearchWallpapers(query: categorias[index], page: 1));
               Navigator.of(context)
                   .push(MaterialPageRoute(builder: (context) => ResultSearch(categoria: categorias[index],)))
                   .catchError((onError) {

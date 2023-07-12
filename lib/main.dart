@@ -1,10 +1,17 @@
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
+import 'package:fast_cached_network_image/fast_cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minwell/bloc/blocs.dart';
 import 'package:minwell/presentation/presentation.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await FastCachedImageConfig.init(clearCacheAfter: const Duration(days: 1));
+
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
